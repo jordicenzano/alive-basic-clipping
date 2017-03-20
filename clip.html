@@ -1,0 +1,220 @@
+<html>
+   <head>
+      <title>Alive Clipping Demo interface</title>
+      <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+      <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css">
+      <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+      <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+
+        <link href="./css/video-js.min.css" rel="stylesheet"> <!--Version: 5.14.1 -->
+        <script src="./js/video.js"></script> <!--Version: 5.14.1-->
+        <script src="./js/videojs-contrib-hls.js"></script> <!--Version: 4.0.2 -->
+
+       <script src="./js/alive-vod-demo.js"></script>
+      <style type="text/css">
+         .bs-general{
+           position: absolute;
+           top: 90px;
+           margin: 20px;
+         }
+         .center {
+           margin: 0 auto;
+           width: 400px;
+         }
+         tr.spaceUnder td {
+           padding-bottom: 10px;
+         }
+         tr.spaceUnder2 td {
+           padding-bottom: 30px;
+         }
+         tr.spaceUp td {
+           padding-top: 15px;
+         }
+         #header {
+           position: absolute;
+           top: 0px;
+           left: 0px;
+           width: 100%;
+           height: 85px;
+           background-color: #469CA9;
+           font-family:'Helvetica', 'Arial', 'sans-serif';
+           font-weight:400;
+           font-style:normal;
+           font-size:28px;
+           color:#FFFFFF;
+           z-index: 1;
+         }
+         .table1 {
+           position: absolute;
+           top: 0px;
+           margin: 50px;
+         }
+         .job-id {
+           position: absolute;
+           top: 1000px;
+         }
+         .rounded-button {
+           border: 2px solid #469CA9;
+           background-color: #FFFFFF;
+           color: #469CA9;
+         }
+         .preview-button {
+           border: 2px solid #469CA9;
+           background-color: #469CA9;
+           color: #FFFFFF;
+         }
+
+         .tooltip {
+           position: absolute;
+           display: inline;
+           opacity: 1;
+           top: 10px;
+           left: 10px;
+         }
+
+         .tooltip .tooltiptext {
+           visibility: hidden;
+           width: 800px;
+           font-size: 18px;
+           background-color: #4b4b4b;
+           text-align:left;
+
+           color: #fff;
+           border-radius: 6px;
+
+           /* Position the tooltip */
+           position: absolute;
+           opacity: 1;
+           z-index: 1;
+         }
+
+         .tooltip:hover .tooltiptext {
+           visibility: visible;
+         }
+
+      </style>
+   </head>
+   <body onload="onLoadPage()">
+      <div id="header">
+          <div class="tooltip" style="">
+            <image style="width:30px"  src="./pics/help.ico"/>
+            <span class="tooltiptext"><h1>URL format:</h1>
+              You need to add the following params as querystring:<br>
+              <li>env: (OPTIONAL, if not present it points to prod) qa (Remember we need to fake CORS)</li>
+              <li>apikey: (Mandatory) Your Alive API key</li>
+              <li>vc_creds_name: (Mandatory) The Alive VC credentials name you want to use</li>
+              <li>jobid: (Mandatory) The Alive jobId to clip</li>
+              Example: <br>https://www.myserver.com/clip.html?env=qa&apikey=abcedfghijklmopq&vc_creds_name=VCcreds&jobid=abcd1234abcd1234abcd1234abcd1234
+            </span>
+          </div>
+          <h2 align="center">Preview: Alive clipping demo interface</h2>
+      </div>
+      <div class="bs-general">
+         <br/>
+         <br/>
+         <table>
+           <col width=250>
+           <col width=620>
+           <col width=620>
+           <tr>
+             <td></td>
+             <td>
+               <table>
+                 <col width=200>
+                 <col width=200>
+                 <col width=200>
+                 <tr>
+                   <video width=640 height=360 id="bcovVideoPlayback" style="center" poster="./pics/brightcove_logo_black.jpg" class="video-js vjs-default-skin row" controls></video>
+                 </tr>
+                 <tr class="spaceUp">
+                   <td>
+                     <button class="btn btn-success" onclick='playLive()'>Live</button>
+                   </td>
+                   <td>
+                     <button class="btn preview-button" onclick='playVod()'>DVR</button>
+                   </td>
+                   <td>
+                     <p><span>Current Time: </span></p>
+                     <div id="current_time_parent_div"><input id="current_time" readonly value="--:--:--"></div>
+                   </td>
+                 </tr>
+               </table>
+             </td>
+             <td valign="top">
+               <div class="form-group table1" id="create_vod_section">
+                 <table>
+                   <col width=125>
+                   <col width=600>
+                   <tr class="spaceUnder">
+                     <td>
+                       <h4>Create Clip</h4>
+                     </td>
+                   </tr>
+                   <tr class="spaceUnder">
+                     <td>Start clip time</td>
+                     <td>
+                       <input type="text" id="totaldetetedin" value="0" hidden>
+                       <input type="text" style="width:100px" id="set_in_time" value="00:00:00" readonly>
+                       &nbsp&nbsp<button onclick="assignCurrentTimeToSetInTime()" id="set_in_time_btn" class="btn rounded-button" disabled>Set</button>
+                     </td>
+                   </tr>
+                   <tr class="spaceUnder">
+                     <td>End clip time</td>
+                     <td>
+                       <input type="text" id="totaldetetedout" value="0" hidden>
+                       <input type="text" style="width:100px" id="set_out_time" value="00:00:00" readonly>
+                       &nbsp&nbsp<button onclick="assignCurrentTimeToSetOutTime()" id="set_out_time_btn" class="btn rounded-button" disabled>Set</button>
+                     </td>
+                   </tr>
+                   <tr class="spaceUnder">
+                     <td>Clip Name</td>
+                     <td>
+                       <input type="text" style="width:100px" id="clip_name" value="Test Clip">
+                       Clip Tags
+                       <input type="text" style="width:100px" id="clip_tags" value="tag1,tag2">
+                     </td>
+                   </tr>
+                   <tr class="spaceUnder">
+                     <td>
+                       <button onclick="createVod()" class="btn preview-button">Create Clip</button>
+                     </td>
+                   </tr>
+                 </table>
+
+                 <table>
+                   <col width=200>
+                   <col width=200>
+                   <col width=200>
+                   <thead class="spaceUnder">
+                     <tr>
+                       <th>
+                         <h4>Clip status</h4>
+                       </th>
+                     </tr>
+                   </thead>
+                   <thead class="spaceUnder">
+                     <tr>
+                       <th><h5>Clip Name</h5></th>
+                       <th><h5>Clip Status</h5></th>
+                       <!-- <th><h5>Preview</h5></th> -->
+                     </tr>
+                   </thead>
+                   <tbody class="spaceUnder2" id="clip_list">
+
+                   </tbody>
+                 </table>
+               </div>
+             </td>
+           </tr>
+         </table>
+      </div>
+      <!--
+         Now, initialize your player. That's it!
+         -->
+      <script>
+         var player = videojs('bcovVideoPlayback');
+         var timerSpinning = false;
+         var type = "live";
+      </script>
+   </body>
+</html>
